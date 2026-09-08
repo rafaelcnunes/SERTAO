@@ -1,0 +1,12 @@
+numpy
+scipy
+matplotlib
+pandas
+getdist
+dynesty
+mpi4py
+cython
+numba
+corner
+h5py
+tqdm

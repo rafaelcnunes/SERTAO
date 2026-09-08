@@ -1,0 +1,74 @@
+Metadata-Version: 2.4
+Name: SERTAO
+Version: 0.1.0
+Summary: SERTAO: System for Estimation of cosmological paRameTers and Analysis of Observables
+Author: Rafael Nunes
+Author-email: rafadcnunes@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Scientific/Engineering :: Astronomy
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: matplotlib
+Requires-Dist: pandas
+Requires-Dist: getdist
+Requires-Dist: dynesty
+Requires-Dist: mpi4py
+Requires-Dist: cython
+Requires-Dist: numba
+Requires-Dist: corner
+Requires-Dist: h5py
+Requires-Dist: tqdm
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# SERTAO
+
+**System for Estimation of Cosmological paRameTers and Analysis of Observables**
+
+<p align="center">
+  <img src="docs/logo.png" width="400">
+</p>
+
+---
+
+## Implemented Likelihoods and Data Sets
+
+The following likelihoods and data sets are currently implemented:
+
+- BAO – DESI (DR2)
+- Angular BAO (2D)
+- Type Ia Supernovae – Pantheon+
+- Pantheon+ calibrated with SH0ES
+- Type Ia Supernovae – Union 3.0
+- Primordial Nucleosynthesis prior (BBN)
+- Compressed CMB likelihood
+- Redshift-Space Distortions (RSD)
+- Cosmic Chronometers (CC)
+
+---
+
+## Code Structure and Philosophy
+
+The execution flow of the code has been designed to be simple, modular, and transparent for the user.  
+Any cosmological model can be straightforwardly implemented within the SERTAO framework and tested against the data sets listed above (see the manual below).
+
+The `HybridCosmology` module implements a hybrid cosmological framework that combines the internal SERTAO infrastructure with the Boltzmann solver CLASS. This approach provides a flexible background description while benefiting from the precision and robustness of CLASS for perturbation-level calculations.
+
+---
+
+## 📘 Manual
+
+The user manual is available at:
+
+[📄 Download the SERTAO Manual (PDF)](docs/SERTAO_manual.pdf)
+
