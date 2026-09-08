@@ -1,3 +1,0 @@
-SERTAO
-likelihoods
-theory_models
