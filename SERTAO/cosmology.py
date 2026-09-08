@@ -2,60 +2,12 @@ import numpy as np
 from scipy.integrate import cumulative_trapezoid, solve_ivp
 from scipy.interpolate import interp1d
 
-
-# Planck 2018 baryon density (arXiv:1807.06209, Table 2)
+# Planck 2018 baryon density 
 _OMEGA_B_PLANCK = 0.04930
-
 
 class GenericCosmology:
     """
     Generic cosmological class.
-
-    Accepts any Hubble function H(z) and provides:
-        - Comoving, luminosity, angular diameter, BAO distances
-        - Sound horizon (fitting formula)
-        - Linear growth factor D(z), growth rate f(z), sigma8(z), fsigma8(z)
-
-    Distance cache
-    --------------
-    Distances are computed on a two-segment redshift grid and cached.
-    The split avoids the accuracy trade-off of a single uniform grid:
-
-        Segment 1:  z in [0, Z_PIVOT]  —  dense (NZ_LOW points)
-                    Covers BAO, SNe Ia, CC, RSD datasets.
-                    c/H(z) varies significantly here (matter/DE transition).
-
-        Segment 2:  z in [Z_PIVOT, z_max]  —  sparser (NZ_HIGH points)
-                    Built only when z_max > Z_PIVOT, i.e. when the CMB
-                    likelihood requests chi(z* ~ 1090).
-                    c/H(z) ~ (1+z)^{-3/2} here — smooth power law,
-                    so far fewer points are needed for the same accuracy.
-
-    Accuracy (flat LCDM, compared to a 200 000-point reference):
-        BAO/SNe  (z < 3):    < 0.001 %   (data uncertainties ~ 0.5–1 %)
-        CMB      (z* ~ 1090): < 0.006 %   (well below CMB theta* precision)
-
-    The original single-grid approach (10 000 pts in [0, 1.05*z_max])
-    gave < 0.001% for low-z but degraded to ~0.3% for BAO redshifts
-    whenever the CMB likelihood forced z_max ~ 1150.
-
-    Growth ODE
-    ----------
-    The linear growth equation is solved in scale factor a using DOP853
-    with tight tolerances. Corrections applied vs the original:
-        - Initial condition at a_ini = 1/(1+50) (deep matter domination)
-          instead of a_ini = 1/(1+z_max), making the matter-dominated
-          attractor approximation D ~ a accurate to < 10^{-5}.
-        - fill_value tuple corrected so extrapolation outside the grid
-          returns the physically correct boundary value.
-        - dlnH/dlna computed analytically from Omega_m(z) instead of
-          three H(z) evaluations per ODE step (3x faster for expensive
-          H_of_z models such as quintessence).
-
-    Sound horizon
-    -------------
-    Neff reference updated from 3.04 to 3.044 (Planck 2018 / Bennett 2021)
-    in the fitting formula denominator.
     """
 
     c       = 299792.458   # km/s
@@ -85,8 +37,6 @@ class GenericCosmology:
 
         self.Omega_m = Omega_m
 
-        # Omega_b default: Planck 2018 value rather than an arbitrary
-        # fraction of Omega_m (the original 0.16*Omega_m had no physical basis).
         self.Omega_b = Omega_b if Omega_b is not None else _OMEGA_B_PLANCK
 
         self.sigma8_0 = sigma8_0
@@ -208,11 +158,7 @@ class GenericCosmology:
 
     def rd_sound_horizon(self):
         """
-        Comoving sound horizon at the drag epoch (Mpc).
-
-        Fitting formula calibrated against CLASS/CAMB.
-        Neff reference updated to 3.044 (Planck 2018 + Bennett 2021
-        QED corrections) from the original 3.04.
+        Comoving sound horizon at the drag epoch (Mpc). Fitting formula calibrated against CLASS/CAMB.
         """
         return (
             147.05
@@ -348,10 +294,6 @@ class GenericCosmology:
 class ScalarFieldCosmology(GenericCosmology):
     """
     Cosmology driven by a quintessence scalar field.
-
-    Builds H(z) from the density fraction Omega_phi(z) returned by
-    a QuintessenceDynamics solver, then delegates everything to
-    GenericCosmology.
     """
 
     def __init__(

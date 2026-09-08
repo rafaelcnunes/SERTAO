@@ -65,9 +65,8 @@ class _SERTAOLikelihood:
             pre_check=self._pre_check, debug=self._debug,
         )
 
-
 # ================================================================
-# Live monitor — MontePython-style table
+# Live monitor
 # ================================================================
 
 class _LiveMonitor:

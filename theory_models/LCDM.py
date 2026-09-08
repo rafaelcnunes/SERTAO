@@ -1,11 +1,5 @@
 """
 Flat LCDM with photon radiation.
-
-Free parameters
----------------
-H0, Omega_cdm, Omega_b
-+ nuisance: M_B (Pantheon+), Mcal (Union3), sigma8 (RSD/f)
-
 Usage via run.py
 ----------------
     python run.py --model LCDM
@@ -15,7 +9,7 @@ Usage via run.py
 import numpy as np
 
 # ================================================================
-# 1. Datasets
+# Datasets
 # ================================================================
 
 DATASETS = ['BAO_DESI', 'BBN']
@@ -31,7 +25,7 @@ DATASETS = ['BAO_DESI', 'BBN']
 ANALYSIS_NAME = "LCDM"
 
 # ================================================================
-# 2. Priors
+# Priors
 # ================================================================
 
 PRIORS = {
@@ -53,7 +47,7 @@ if any(d in DATASETS for d in ('RSD', 'f')):
     PRIORS['sigma8'] = (0.5, 1.0)
 
 # ================================================================
-# 3. H(z) model
+# H(z) model
 # ================================================================
 
 _OMEGA_GAMMA_H2 = 2.469e-5   # Fixsen 2009

@@ -1,7 +1,5 @@
 """
-theory_models/LCDM_neutrinos.py
---------------------------------
-Flat ΛCDM + massive neutrinos + optional free N_eff.
+Flat LCDM + massive neutrinos + optional free N_eff.
 
 Neutrino density follows the WMAP-7 Fermi-Dirac formalism
 (Komatsu et al. 2011, Appendix C), tracking the full
@@ -26,7 +24,7 @@ import numpy as np
 from SERTAO.neutrinos import create_neutrinos
 
 # ================================================================
-# 1. Datasets
+# Datasets
 # ================================================================
 
 DATASETS = ['Pantheon+', 'BAO_DESI', 'BBN']
@@ -40,7 +38,7 @@ DATASETS = ['Pantheon+', 'BAO_DESI', 'BBN']
 ANALYSIS_NAME = "LCDM_neutrinos"
 
 # ================================================================
-# 2. Neutrino configuration
+# Neutrino configuration
 # ================================================================
 
 SAMPLE_NU_MASS = False      # True → sample Σmν; False → fix it
@@ -53,7 +51,7 @@ NU_CONFIG      = 'standard' # 'standard' | '1ncdm' | 'hierarchy_normal'
                              # | 'hierarchy_inverted' | (m1, m2, m3)
 
 # ================================================================
-# 3. Priors
+# Priors
 # ================================================================
 
 PRIORS = {
@@ -87,14 +85,6 @@ if any(d in DATASETS for d in ('RSD', 'f')):
 _OMEGA_GAMMA_H2 = 2.469e-5   # Fixsen 2009
 
 def _build_H_model():
-    """
-    Returns H_model(z, p) with the chosen neutrino treatment.
-
-    When both sum_m and N_eff are fixed, Omega_nu0 is pre-computed
-    once here and captured in the closure — zero overhead per call.
-    When either is sampled, create_neutrinos() hits the lru_cache
-    for repeated proposals.
-    """
     _nu_fixed        = None
     _Omega_nu0_fixed = None
 

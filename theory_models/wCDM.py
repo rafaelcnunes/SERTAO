@@ -1,33 +1,5 @@
 """
-theory_models/wCDM.py
----------------------
-Flat wCDM: ΛCDM with a constant dark energy equation of state w ≠ -1.
-
-Dark energy equation of state
-------------------------------
-    w(z) = w0   (constant for all z)
-
-    Ω_DE(z) = Ω_DE0 · (1+z)^{3(1+w0)}
-
-Special cases:
-    w0 = -1  →  ΛCDM  (cosmological constant)
-    w0 > -1  →  quintessence  (scalar field, canonical)
-    w0 < -1  →  phantom dark energy
-
-Flatness constraint:
-    Ω_DE0 = 1 - Ω_m - Ω_r   (derived, not sampled)
-
-Free parameters
----------------
-H0, Omega_cdm, Omega_b, w0
-+ nuisance: M_B (Pantheon+), Mcal (Union3), sigma8 (RSD/f)
-
-Physical prior on w0
---------------------
-(-3, 1): lower bound avoids extreme phantom behaviour;
-          upper bound ensures accelerated expansion today
-          (w0 < -1/3 required for acceleration).
-
+Flat wCDM: LCDM with a constant dark energy equation of state w ≠ -1.
 Usage via run.py
 ----------------
     python run.py --model wCDM
@@ -37,7 +9,7 @@ Usage via run.py
 import numpy as np
 
 # ================================================================
-# 1. Datasets
+# Datasets
 # ================================================================
 
 DATASETS = ['Pantheon+', 'BAO_DESI', 'BBN']
@@ -52,7 +24,7 @@ DATASETS = ['Pantheon+', 'BAO_DESI', 'BBN']
 ANALYSIS_NAME = "wCDM"
 
 # ================================================================
-# 2. Priors
+# Priors
 # ================================================================
 
 PRIORS = {
@@ -75,7 +47,7 @@ if any(d in DATASETS for d in ('RSD', 'f')):
     PRIORS['sigma8'] = (0.5, 1.0)
 
 # ================================================================
-# 3. H(z) model
+# H(z) model
 # ================================================================
 
 _OMEGA_GAMMA_H2 = 2.469e-5   # photon density today (Fixsen 2009)

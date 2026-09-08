@@ -86,15 +86,15 @@ python run.py --model my_model
 
 | Name | Description |
 |---|---|
-| `BAO_DESI` | Baryon Acoustic Oscillations — DESI DR2 (7 bins, 0.3 < z < 2.3) |
+| `BAO_DESI` | Baryon Acoustic Oscillations — DESI DR2 |
 | `BAO_2D` | Angular BAO (2D) |
-| `Pantheon+` | Type Ia Supernovae — Pantheon+ (1701 SNe) |
+| `Pantheon+` | Type Ia Supernovae — Pantheon+ |
 | `Pantheon+SHOES` | Pantheon+ calibrated with SH0ES Cepheid anchor |
-| `Union3` | Type Ia Supernovae — Union 3.0 (2087 SNe) |
-| `BBN` | Primordial nucleosynthesis prior on ωb h² (Planck 2018) |
-| `CMB θ*` | Compressed CMB likelihood: R, la, ωb h² |
-| `CC` | Cosmic Chronometers H(z) |
-| `RSD` | Redshift-Space Distortions f σ8(z) |
+| `Union3` | Type Ia Supernovae — Union 3.0 |
+| `BBN` | Primordial nucleosynthesis prior|
+| `CMB θ*` | Compressed CMB likelihood |
+| `CC` | Cosmic Chronometers|
+| `RSD` | Redshift-Space Distortions |
 | `f` | Linear growth rate f(z) |
 
 > **Note:** `Pantheon+` and `Union3` cannot be used simultaneously.
@@ -196,7 +196,7 @@ Expected output:
 
 ## HybridCosmology (CLASS interface)
 
-The `HybridCosmology` module connects SERTAO to the [CLASS](https://lesgourg.github.io/class_public/class.html) Boltzmann solver, providing access to the matter power spectrum P(k, z), transfer function T(k, z), and other perturbation-level quantities. It inherits from `GenericCosmology` and is fully compatible with all likelihoods.
+The `HybridCosmology` module connects SERTAO to the [CLASS](https://github.com/lesgourg/class_public) Boltzmann solver, providing access to the matter power spectrum P(k, z), transfer function T(k, z), and other perturbation-level quantities. It inherits from `GenericCosmology` and is fully compatible with all likelihoods.
 
 ---
 
@@ -204,7 +204,7 @@ The `HybridCosmology` module connects SERTAO to the [CLASS](https://lesgourg.git
 
 Full documentation is available in the user manual:
 
-[📄 Download the SERTAO Manual (PDF)](docs/SERTAO_manual.pdf)
+[📄 Download the SERTAO Manual (PDF)](docs/Guia_SERTAO.pdf)
 
 ---
 

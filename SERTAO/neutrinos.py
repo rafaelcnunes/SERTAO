@@ -33,18 +33,6 @@ Limits
 The transition redshift for species i is z_trans,i ≈ m_i / T_nu,0 - 1.
 For m_i = 0.02 eV: z_trans ~ 118. For m_i = 0.06 eV: z_trans ~ 357.
 
-Comparison with current sigmoid approximation
----------------------------------------------
-The original neutrinos.py uses a sigmoid to interpolate between pure
-relativistic and pure non-relativistic limits. The WMAP formalism
-gives errors of 60-90% near z_trans compared to the sigmoid, because
-the sigmoid transition is centered at the wrong redshift and uses the
-wrong width. The f(y) approach is the physically correct treatment.
-
-The standard formula  omega_nu = Σm_nu / 93.14 eV  (NR limit, z=0)
-agrees with the WMAP formalism to < 0.6% for any neutrino mass in the
-cosmologically relevant range, so it remains useful as a quick check.
-
 Neutrino temperature
 --------------------
 T_nu,0 = (4/11)^{1/3} * T_CMB comes from entropy conservation at
@@ -107,8 +95,6 @@ def fermi_dirac_f(y):
 
 class Neutrinos:
     """
-    Neutrino density evolution using the WMAP-7 Fermi-Dirac formalism.
-
     Computes Omega_nu(z) species by species, tracking the full
     relativistic-to-non-relativistic transition via the fitting
     formula for the Fermi-Dirac energy integral f(y).
