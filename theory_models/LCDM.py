@@ -12,15 +12,15 @@ import numpy as np
 # Datasets
 # ================================================================
 
-DATASETS = ['BAO_DESI', 'BBN']
+#DATASETS = ['BAO_DESI', 'BBN']
 
 # Other common combinations:
-# DATASETS = ['Pantheon+', 'BAO_DESI', 'BBN']
+DATASETS = ['Pantheon+', 'BAO_DESI', 'BBN']
 # DATASETS = ['Pantheon+', 'BAO_DESI', 'BBN', 'CMB θ*']
 # DATASETS = ['Pantheon+SHOES', 'BAO_DESI', 'BBN']
 # DATASETS = ['Union3',    'BAO_DESI', 'BBN']
-# DATASETS = ['CC',        'BAO_DESI', 'BBN', 'CMB θ*']
-# DATASETS = ['RSD',       'BAO_DESI', 'BBN']
+#DATASETS = ['CC',        'BAO_DESI', 'BBN', 'CMB θ*']
+#DATASETS = ['RSD',       'BAO_DESI', 'BBN']
 
 ANALYSIS_NAME = "LCDM"
 
@@ -31,7 +31,7 @@ ANALYSIS_NAME = "LCDM"
 PRIORS = {
     'H0':        (40.0, 90.0),
     'Omega_cdm': (0.10, 0.50),
-    'Omega_b':   (0.02, 0.06),
+    'Omega_b':   (0.02, 0.08),
 }
 
 use_pp = any(d in DATASETS for d in ('Pantheon+', 'Pantheon+SHOES'))
@@ -50,7 +50,7 @@ if any(d in DATASETS for d in ('RSD', 'f')):
 # H(z) model
 # ================================================================
 
-_OMEGA_GAMMA_H2 = 2.469e-5   # Fixsen 2009
+_OMEGA_GAMMA_H2 = 2.469e-5  
 
 def H_model(z, p):
     H0      = p['H0']

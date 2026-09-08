@@ -1,0 +1,3 @@
+# Bayesian evidence — Nested Sampling (dynesty)
+logZ   = -728.768202
+sigmaZ = 0.262275

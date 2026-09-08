@@ -8,7 +8,7 @@ import numpy as np
 
 class RSDFastLikelihood:
     """
-    Likelihood para dados RSD (f*sigma8).
+#    Likelihood para dados RSD.
     """
 
     def __init__(self, data_dir="data"):
