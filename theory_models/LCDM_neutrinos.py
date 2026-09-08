@@ -1,14 +1,5 @@
 """
-theory_models/LCDM_neutrinos.py
---------------------------------
-Flat ΛCDM + massive neutrinos + optional free N_eff.
-
-Configuration
--------------
-Edit the four flags below, then run:
-
-    python run.py --model LCDM_neutrinos
-    mpirun -np 4 python run.py --model LCDM_neutrinos
+Flat LCDM + massive neutrinos + optional free N_eff.
 """
 
 import numpy as np
@@ -70,26 +61,15 @@ if any(d in DATASETS for d in ('RSD', 'f')):
     PRIORS['sigma8'] = (0.5, 1.0)
 
 # ================================================================
-# 4. H(z) model
-#
-# Defined as a module-level callable CLASS (not a closure inside a
-# function) so that pickle/dynesty can serialise it into checkpoints.
-#
-# A closure defined inside _build_H_model() is NOT picklable and
-# causes:  AttributeError: Can't get local object
-#          '_build_H_model.<locals>.H_model'
+# H(z) model
 # ================================================================
 
-_OMEGA_GAMMA_H2 = 2.469e-5   # photon density today (Fixsen 2009)
+_OMEGA_GAMMA_H2 = 2.469e-5   # photon density today
 
 
 class _NeutrinoHModel:
     """
-    Pickle-safe H(z) callable for ΛCDM + massive neutrinos.
-
-    Defined at module level so dynesty can serialise it into the
-    checkpoint .pkl. A closure inside a function is not importable
-    by pickle and raises AttributeError on checkpoint save.
+    Pickle-safe H(z) callable for LCDM + massive neutrinos.
     """
 
     def __init__(

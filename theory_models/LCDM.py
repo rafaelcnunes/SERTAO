@@ -12,10 +12,10 @@ import numpy as np
 # Datasets
 # ================================================================
 
-#DATASETS = ['BAO_DESI', 'BBN']
+DATASETS = ['BAO_DESI', 'BBN']
 
 # Other common combinations:
-DATASETS = ['Pantheon+', 'BAO_DESI', 'BBN']
+#DATASETS = ['Pantheon+', 'BAO_DESI', 'BBN']
 # DATASETS = ['Pantheon+', 'BAO_DESI', 'BBN', 'CMB θ*']
 # DATASETS = ['Pantheon+SHOES', 'BAO_DESI', 'BBN']
 # DATASETS = ['Union3',    'BAO_DESI', 'BBN']
