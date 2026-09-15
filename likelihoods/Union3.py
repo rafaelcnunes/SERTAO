@@ -23,7 +23,7 @@ class Union3Likelihood:
         data_file = os.path.join(self.data_dir, 'lcparam_full.txt')
         cov_file = os.path.join(self.data_dir, 'mag_covmat.txt')
 
-        self.data = pd.read_csv(data_file, sep='\s+', comment='#', header=None)
+        self.data = pd.read_csv(data_file, sep=r'\s+', comment='#', header=None)
         
         column_names = ['name', 'zcmb', 'zhel', 'dz', 'mb', 'dmb', 
                        'x1', 'dx1', 'color', 'dcolor', '3rdvar', 'd3rdvar',

@@ -1,0 +1,16 @@
+# DESI DR1 ShapeFit — FS-only data vector
+# Extracted from HDF5 files (arXiv:2411.12022)
+# Parameters: qiso, qap, df, dm per tracer (4 per tracer, 24 total)
+# qiso: DV(z)/DV_fid(z)    [isotropic dilation]
+# qap:  F_AP(z)/F_AP_fid   [Alcock-Paczynski ratio]
+# df:   fsig8(z)/fsig8_fid [growth rate ratio]
+# dm:   slope m - m_fid    [shape residual]
+# DV_rd_fid from attrs
+#
+# tracer  z_eff  DV_rd_fid  qiso  qap  df  dm
+BGS  0.29536404  8.06588767  0.98195415  0.96677186  0.87081731  -0.04903200
+LRG1  0.50962887  12.82624806  0.98399515  0.93427013  1.13939521  0.02034537
+LRG2  0.70579565  16.45886836  0.96749047  1.03670058  1.02326531  0.02231665
+LRG3ELG1  0.91858520  19.73458207  1.00187358  1.01102451  1.01594482  -0.02498728
+ELG2  1.31706588  24.43046922  0.99244014  0.96705713  0.91554740  0.04172331
+QSO  1.49050178  26.02780039  0.98999214  1.00668704  1.11164288  0.06195166

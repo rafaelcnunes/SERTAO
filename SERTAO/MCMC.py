@@ -126,7 +126,24 @@ class _LiveMonitor:
             params = res.samples[-1]
             logl   = float(res.logl[-1])
             logz   = float(res.logz[-1])
-            dlogz  = float(res.logzerr[-1])
+
+            # Remaining evidence ΔlogZ: estimated from the live points.
+            # dynesty computes this internally as:
+            #   delta_logz = logaddexp(0, loglmax_live + logvol - logz)
+            # where loglmax_live = max logL among current live points,
+            # and logvol is the log of the remaining prior volume.
+            #
+            # res.logzerr is the *uncertainty* on logZ (sqrt(H/nlive)),
+            # NOT the remaining evidence — using it caused the ΔlogZ column
+            # to show ~0.1–0.4 throughout instead of decaying to the
+            # stopping threshold.
+            try:
+                logvol   = float(res.logvol[-1])
+                loglmax  = float(np.max(res.logl[-self._nlive:]))
+                dlogz    = float(np.logaddexp(0.0, loglmax + logvol - logz))
+            except Exception:
+                dlogz = float(res.logzerr[-1])   # fallback
+
             ncall  = int(np.sum(res.ncall)) if hasattr(res, "ncall") else it
             return it, params, logl, logz, dlogz, ncall
         except Exception:

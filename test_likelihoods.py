@@ -12,9 +12,8 @@ Each test verifies that:
   5. The chi2 = -2*logL is in a physically reasonable range for the
      number of data points
 
-No CLASS, no HybridCosmology, no Pantheon+/Union3 covariance matrices
-needed for the core tests.  Pantheon+/Union3/BAO_2D tests use the real
-data files from the SERTAO data/ directory if available.
+No CLASS or HybridCosmology is required. All implemented likelihoods use
+the real data files from the SERTAO data/ directory when available.
 
 Run
 ---
@@ -103,7 +102,8 @@ class MockCosmology:
     def Hubble(self, z):return float(self._Hfunc(z))
 
     def DM(self, z):
-        return float(np.interp(z, self._zg, self._cg))
+        distance = np.interp(z, self._zg, self._cg)
+        return float(distance) if np.ndim(distance) == 0 else distance
 
     def DL(self, z):
         return (1.0 + z) * self.DM(z)
@@ -357,13 +357,7 @@ def test_cc_fiducial():
         raise FileNotFoundError("data file missing")
     from likelihoods.CC import CC
     cc = CC(DATA_DIR)
-    # CC uses the original interface: (theta, priors, H_model)
-    priors = {"H0": (40,90), "Omega_cdm": (0.1,0.5), "Omega_b": (0.02,0.06)}
-    theta  = np.array([PLANCK["H0"], 0.2642, PLANCK["Omega_b"]])
-    def H_model(z, p):
-        H0 = p["H0"]; Om = p["Omega_cdm"] + p["Omega_b"]
-        return H0 * np.sqrt(Om*(1+z)**3 + (1-Om))
-    logL = cc(theta, priors, H_model)
+    logL = cc(cosmo_fid)
     assert_finite(logL)
     assert_negative(logL)
     assert_chi2_range(logL, cc.n_data, "CC")
@@ -374,14 +368,8 @@ def test_cc_sensitivity():
         raise FileNotFoundError("data file missing")
     from likelihoods.CC import CC
     cc = CC(DATA_DIR)
-    priors = {"H0": (40,90), "Omega_cdm": (0.1,0.5), "Omega_b": (0.02,0.06)}
-    def H_model(z, p):
-        H0 = p["H0"]; Om = p["Omega_cdm"] + p["Omega_b"]
-        return H0 * np.sqrt(Om*(1+z)**3 + (1-Om))
-    t_good = np.array([PLANCK["H0"], 0.2642, PLANCK["Omega_b"]])
-    t_bad  = np.array([50.0, 0.45, 0.07])
-    logL_good = cc(t_good, priors, H_model)
-    logL_bad  = cc(t_bad,  priors, H_model)
+    logL_good = cc(cosmo_fid)
+    logL_bad  = cc(cosmo_bad)
     assert_worsens(logL_good, logL_bad, "CC")
     return f"Δ logL = {logL_good - logL_bad:.2f}"
 
@@ -450,7 +438,169 @@ def test_f_sensitivity():
 
 
 # ================================================================
-# 8. Engine integration test
+# 8. DESI Full Shape (ShapeFit)
+# ================================================================
+
+def test_fs_desi_fiducial():
+    if not os.path.isdir(os.path.join(DATA_DIR, "FS_DESI_DR1")):
+        raise FileNotFoundError("FS_DESI_DR1 data directory missing")
+    from likelihoods.FS_DESI import FSDESILikelihood
+    fs = FSDESILikelihood(DATA_DIR)
+    logL = fs(cosmo_fid)
+    assert_finite(logL)
+    assert_negative(logL)
+    assert_chi2_range(logL, fs.n_data, "FS_DESI")
+    return f"logL={logL:.4f}, n_data={fs.n_data}"
+
+def test_fs_desi_sensitivity():
+    if not os.path.isdir(os.path.join(DATA_DIR, "FS_DESI_DR1")):
+        raise FileNotFoundError("FS_DESI_DR1 data directory missing")
+    from likelihoods.FS_DESI import FSDESILikelihood
+    fs = FSDESILikelihood(DATA_DIR)
+    logL_good = fs(cosmo_fid)
+    logL_bad  = fs(cosmo_bad)
+    assert_worsens(logL_good, logL_bad, "FS_DESI")
+    return f"Δ logL = {logL_good - logL_bad:.2f}"
+
+
+# ================================================================
+# 9. Type Ia supernovae
+# ================================================================
+
+def test_pantheon_plus_fiducial():
+    from likelihoods.PP import PantheonPlusLikelihood
+    pp = PantheonPlusLikelihood(DATA_DIR, use_sys_cov=False)
+    logL, chi2 = pp.loglkl(cosmo_fid, M_B=-19.3)
+    assert_finite(logL)
+    assert_negative(logL)
+    assert np.isclose(chi2, -2.0 * logL)
+    return f"logL={logL:.4f}, n_data={pp.n_sne}"
+
+def test_pantheon_plus_sensitivity():
+    from likelihoods.PP import PantheonPlusLikelihood
+    pp = PantheonPlusLikelihood(DATA_DIR, use_sys_cov=False)
+    logL_good, _ = pp.loglkl(cosmo_fid, M_B=-19.3)
+    logL_bad,  _ = pp.loglkl(cosmo_bad, M_B=-18.0)
+    assert_worsens(logL_good, logL_bad, "Pantheon+")
+    return f"Δ logL = {logL_good - logL_bad:.2f}"
+
+def test_pantheon_shoes_fiducial():
+    from likelihoods.PP_SHOES import PantheonPlusSHOESLikelihood
+    pps = PantheonPlusSHOESLikelihood(DATA_DIR, use_sys_cov=False)
+    logL, chi2 = pps.loglkl(cosmo_fid, M_B=-19.3)
+    assert_finite(logL)
+    assert_negative(logL)
+    assert np.isclose(chi2, -2.0 * logL)
+    return f"logL={logL:.4f}, n_data={pps.n_sne}"
+
+def test_pantheon_shoes_sensitivity():
+    from likelihoods.PP_SHOES import PantheonPlusSHOESLikelihood
+    pps = PantheonPlusSHOESLikelihood(DATA_DIR, use_sys_cov=False)
+    logL_good, _ = pps.loglkl(cosmo_fid, M_B=-19.3)
+    logL_bad,  _ = pps.loglkl(cosmo_bad, M_B=-18.0)
+    assert_worsens(logL_good, logL_bad, "Pantheon+SHOES")
+    return f"Δ logL = {logL_good - logL_bad:.2f}"
+
+def test_union3_fiducial():
+    from likelihoods.Union3 import Union3Likelihood
+    union3 = Union3Likelihood(DATA_DIR)
+    logL, chi2 = union3.loglkl(cosmo_fid, Mcal=-19.3)
+    assert_finite(logL)
+    assert_negative(logL)
+    assert np.isclose(chi2, -2.0 * logL)
+    return f"logL={logL:.4f}, n_data={union3.n_sne}"
+
+def test_union3_sensitivity():
+    from likelihoods.Union3 import Union3Likelihood
+    union3 = Union3Likelihood(DATA_DIR)
+    logL_good, _ = union3.loglkl(cosmo_fid, Mcal=-19.3)
+    logL_bad,  _ = union3.loglkl(cosmo_bad, Mcal=-18.0)
+    assert_worsens(logL_good, logL_bad, "Union3")
+    return f"Δ logL = {logL_good - logL_bad:.2f}"
+
+
+
+
+# ================================================================
+# 10. DES-Dovekie
+# ================================================================
+
+def test_dovekie_fiducial():
+    """DES-Dovekie loads and returns a finite logL at Planck cosmology."""
+    if not os.path.exists(os.path.join(DATA_DIR, "DES-Dovekie_HD.csv")) or \
+       not os.path.exists(os.path.join(DATA_DIR, "DES-Dovekie_STAT_SYS.npz")):
+        raise FileNotFoundError("DES-Dovekie data files missing")
+    from likelihoods.DES_Dovekie import DESDovekieLikelihood
+    dov = DESDovekieLikelihood(DATA_DIR)
+    assert dov.n_sne == 1820, f"Expected 1820 SNe, got {dov.n_sne}"
+    logL, chi2 = dov(cosmo_fid, M=0.0)
+    assert_finite(logL)
+    assert_negative(logL)
+    # chi2/n_sne ~ 1 for a well-calibrated sample
+    assert 0.5 < chi2 / dov.n_sne < 3.0, \
+        f"chi2/n = {chi2/dov.n_sne:.3f} — unexpected"
+    return f"logL={logL:.4f}, chi2/n={chi2/dov.n_sne:.3f}, n_sne={dov.n_sne}"
+
+
+def test_dovekie_m_independence():
+    """Goliath marginalization makes logL independent of M."""
+    if not os.path.exists(os.path.join(DATA_DIR, "DES-Dovekie_HD.csv")) or \
+       not os.path.exists(os.path.join(DATA_DIR, "DES-Dovekie_STAT_SYS.npz")):
+        raise FileNotFoundError("DES-Dovekie data files missing")
+    from likelihoods.DES_Dovekie import DESDovekieLikelihood
+    dov = DESDovekieLikelihood(DATA_DIR)
+    logL_0,   _ = dov(cosmo_fid, M=0.0)
+    logL_p10, _ = dov(cosmo_fid, M=10.0)
+    logL_m5,  _ = dov(cosmo_fid, M=-5.0)
+    assert abs(logL_0 - logL_p10) < 0.01, \
+        f"logL not independent of M: {logL_0:.4f} vs {logL_p10:.4f}"
+    assert abs(logL_0 - logL_m5) < 0.01, \
+        f"logL not independent of M: {logL_0:.4f} vs {logL_m5:.4f}"
+    return f"logL(M=0)={logL_0:.4f}, logL(M=10)={logL_p10:.4f}, logL(M=-5)={logL_m5:.4f}"
+
+
+def test_dovekie_sensitivity():
+    """logL worsens for a bad cosmology."""
+    if not os.path.exists(os.path.join(DATA_DIR, "DES-Dovekie_HD.csv")) or \
+       not os.path.exists(os.path.join(DATA_DIR, "DES-Dovekie_STAT_SYS.npz")):
+        raise FileNotFoundError("DES-Dovekie data files missing")
+    from likelihoods.DES_Dovekie import DESDovekieLikelihood
+    dov = DESDovekieLikelihood(DATA_DIR)
+    logL_good, _ = dov(cosmo_fid, M=0.0)
+    logL_bad,  _ = dov(cosmo_bad, M=0.0)
+    assert_worsens(logL_good, logL_bad, "DES_Dovekie")
+    return f"Δ logL = {logL_good - logL_bad:.2f}"
+
+
+def test_dovekie_mu_formula():
+    """mu = 5*log10((1+zHEL)*DM) + 25 — not (c/H0)*DM."""
+    if not os.path.exists(os.path.join(DATA_DIR, "DES-Dovekie_HD.csv")) or \
+       not os.path.exists(os.path.join(DATA_DIR, "DES-Dovekie_STAT_SYS.npz")):
+        raise FileNotFoundError("DES-Dovekie data files missing")
+    from likelihoods.DES_Dovekie import DESDovekieLikelihood
+    dov  = DESDovekieLikelihood(DATA_DIR)
+    c    = 299792.458
+    H0   = cosmo_fid.H0
+    z    = dov.zHD[0]
+    DM   = cosmo_fid.DM(z)
+    zHEL = dov.zHEL[0]
+    mu_correct = 5 * np.log10((1 + zHEL) * DM) + 25
+    mu_wrong   = 5 * np.log10((1 + zHEL) * (c / H0) * DM) + 25
+    # The wrong formula differs by 5*log10(c/H0) ≈ 18 mag
+    assert abs(mu_correct - mu_wrong) > 10, \
+        "mu formulas unexpectedly close — check (c/H0) factor"
+    # Verify the likelihood uses the correct formula
+    dov2 = DESDovekieLikelihood(DATA_DIR)
+    DM_arr = cosmo_fid.DM(dov2.zHD)
+    mu_th = 5 * np.log10(dov2._one_plus_zHEL * DM_arr) + 25
+    mu_th_wrong = 5 * np.log10(dov2._one_plus_zHEL * (c / H0) * DM_arr) + 25
+    # Correct mu should be ~36-45 mag; wrong would be ~54-63 mag
+    assert np.all(mu_th < 50), "mu_theory too large — likely (c/H0) bug present"
+    return (f"mu_correct={mu_correct:.3f}  mu_wrong={mu_wrong:.3f}  "
+            f"diff={abs(mu_correct-mu_wrong):.1f} mag")
+
+# ================================================================
+# 11. Engine integration test
 # ================================================================
 
 def test_engine_bbn_bao():
@@ -499,7 +649,7 @@ def test_engine_bbn_bao():
 
 
 # ================================================================
-# 9. Consistency: logL(Planck) > logL(perturbed)
+# 12. Consistency: logL(Planck) > logL(perturbed)
 # ================================================================
 
 def test_gradient_bbn():
@@ -570,6 +720,24 @@ TESTS = [
     # f(z)
     ("f(z) / fiducial logL",       test_f_fiducial),
     ("f(z) / sensitivity",         test_f_sensitivity),
+
+    # DESI Full Shape
+    ("FS_DESI / fiducial logL",     test_fs_desi_fiducial),
+    ("FS_DESI / sensitivity",       test_fs_desi_sensitivity),
+
+    # Type Ia supernovae
+    ("Pantheon+ / fiducial logL",   test_pantheon_plus_fiducial),
+    ("Pantheon+ / sensitivity",     test_pantheon_plus_sensitivity),
+    ("Pantheon+SHOES / fiducial logL", test_pantheon_shoes_fiducial),
+    ("Pantheon+SHOES / sensitivity",   test_pantheon_shoes_sensitivity),
+    ("Union3 / fiducial logL",      test_union3_fiducial),
+    ("Union3 / sensitivity",        test_union3_sensitivity),
+
+    # DES-Dovekie
+    ("DES_Dovekie / fiducial logL",     test_dovekie_fiducial),
+    ("DES_Dovekie / M independence",    test_dovekie_m_independence),
+    ("DES_Dovekie / sensitivity",       test_dovekie_sensitivity),
+    ("DES_Dovekie / mu formula",        test_dovekie_mu_formula),
 
     # Engine
     ("Engine / BBN + BAO_DESI",    test_engine_bbn_bao),

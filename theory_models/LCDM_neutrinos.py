@@ -15,6 +15,7 @@ DATASETS = ['CC', 'BAO_DESI', 'BBN', 'CMB θ*']
 # DATASETS = ['Pantheon+', 'BAO_DESI', 'BBN', 'CMB θ*']
 # DATASETS = ['Pantheon+SHOES', 'BAO_DESI', 'BBN']
 # DATASETS = ['Union3',    'BAO_DESI', 'BBN']
+# DATASETS = ['DES_Dovekie', 'BAO_DESI', 'BBN']  # DES-Dovekie (M marginalized)
 # DATASETS = ['RSD',       'BAO_DESI', 'BBN']
 
 ANALYSIS_NAME = "LCDM_neutrinos"
@@ -51,8 +52,8 @@ if SAMPLE_NEFF:
 use_pp = any(d in DATASETS for d in ('Pantheon+', 'Pantheon+SHOES'))
 use_u3 = 'Union3' in DATASETS
 
-if use_pp and use_u3:
-    raise ValueError("Pantheon+ and Union3 cannot be used simultaneously.")
+if sum([use_pp, use_u3, 'DES_Dovekie' in DATASETS]) > 1:
+    raise ValueError("Pantheon+/SHOES, Union3 and DES_Dovekie cannot be used simultaneously.")
 if use_pp:
     PRIORS['M_B']  = (-21.0, -18.0)
 if use_u3:

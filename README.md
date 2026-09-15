@@ -47,6 +47,7 @@ python run.py --model LCDM               # flat ΛCDM
 python run.py --model LCDM_neutrinos     # ΛCDM + massive neutrinos + optional Neff
 python run.py --model wCDM               # constant dark energy equation of state
 python run.py --model w0waCDM            # CPL parametrisation (w0, wa)
+python run.py --model scalar_field_run   # Scalar field dynamics (not fully tested)
 ```
 
 ### Adding a new model
@@ -91,13 +92,13 @@ python run.py --model my_model
 | `Pantheon+` | Type Ia Supernovae — Pantheon+ |
 | `Pantheon+SHOES` | Pantheon+ calibrated with SH0ES Cepheid anchor |
 | `Union3` | Type Ia Supernovae — Union 3.0 |
+| `DES_Dovekie`| Type Ia Supernovae Dark Energy Survey Supernova Program |
 | `BBN` | Primordial nucleosynthesis prior|
 | `CMB θ*` | Compressed CMB likelihood |
 | `CC` | Cosmic Chronometers|
 | `RSD` | Redshift-Space Distortions |
 | `f` | Linear growth rate f(z) |
-
-> **Note:** `Pantheon+` and `Union3` cannot be used simultaneously.
+| `ShapeFit` | Compression approach to Full-Shape — DESI DR1|
 
 ---
 
@@ -106,15 +107,15 @@ python run.py --model my_model
 ```
 SERTAO/
 ├── run.py                    # Entry point — runs any model
-├── test_likelihoods.py       # Automated test suite (21 tests)
+├── test_likelihoods.py       # Automated test suite 
 │
-├── theory_models/            # Cosmological models (edit here)
+├── theory_models/            # Cosmological models 
 │   ├── LCDM.py
 │   ├── LCDM_neutrinos.py
 │   ├── wCDM.py
 │   └── w0waCDM.py
 │
-├── SERTAO/                   # Core library (do not modify)
+├── SERTAO/                   # Core library 
 │   ├── engine.py
 │   ├── cosmology.py
 │   ├── neutrinos.py
@@ -122,7 +123,7 @@ SERTAO/
 │   ├── scalar_field.py
 │   └── hybrid_cosmology.py
 │
-├── likelihoods/              # Likelihood functions (do not modify)
+├── likelihoods/              # Likelihood functions 
 ├── data/                     # Observational data files
 └── chains/                   # Output chains (auto-created)
 ```

@@ -294,7 +294,36 @@ class GenericCosmology:
 class ScalarFieldCosmology(GenericCosmology):
     """
     Cosmology driven by a quintessence scalar field.
+
+    Wraps a solved QuintessenceDynamics object and provides the
+    full GenericCosmology interface (distances, growth, sigma8).
+
+    Parameters
+    ----------
+    scalar_solver : QuintessenceDynamics
+        A solved dynamics object (solve() must have been called).
+    H0 : float
+        Hubble constant [km/s/Mpc].
+    Omega_m : float
+        Total matter density parameter (cdm + baryon).
+    Omega_b : float, optional
+        Baryon density parameter.
+    sigma8_0 : float
+        sigma8 at z=0.
+    Neff : float
+        Effective number of relativistic species.
+
+    Notes
+    -----
+    The growth ODE uses dlnH/dlna ≈ −3/2 Omega_m(a), which is
+    exact for smooth dark energy in GR.  For quintessence the full
+    expression includes a correction Omega_phi*(1+w_phi)/2, which
+    is negligible when |1+w_phi| ≪ 1 (thawing models near w≈−1)
+    but can reach ~5% for fast-rolling fields (large λ).
     """
+
+    # Photon density today (Fixsen 2009)
+    _OMEGA_GAMMA_H2 = 2.469e-5
 
     def __init__(
         self,
@@ -307,20 +336,32 @@ class ScalarFieldCosmology(GenericCosmology):
     ):
         self.scalar = scalar_solver
 
-        z_grid        = self.scalar.z()
-        Omega_phi_grid = self.scalar.Omega_phi()
+        # Use the cubic interpolator built by QuintessenceDynamics.solve()
+        if not hasattr(scalar_solver, '_Om_interp'):
+            raise RuntimeError(
+                "scalar_solver must be a QuintessenceDynamics instance "
+                "with solve() already called."
+            )
 
-        # Interpolator for Omega_phi(z); z_grid is decreasing from the solver
-        self._Omega_phi_interp = lambda z: np.interp(
-            z,
-            z_grid[::-1],
-            Omega_phi_grid[::-1],
-        )
+        h        = H0 / 100.0
+        Omega_r  = self._OMEGA_GAMMA_H2 / h**2
 
         def H_of_z(z):
-            Omega_phi = self._Omega_phi_interp(z)
-            Omega_phi = max(Omega_phi, 0.0)   # guard against tiny negatives
-            return H0 * np.sqrt(Omega_m * (1.0 + z)**3 + Omega_phi)
+            # Evaluate Omega_phi — works for both scalar and array z
+            Omega_phi = scalar_solver._Om_interp(z)
+
+            # Guard tiny negatives (numerical noise near zero)
+            Omega_phi = np.maximum(Omega_phi, 0.0)
+
+            H2 = (
+                Omega_m  * (1.0 + z)**3   # matter
+                + Omega_r * (1.0 + z)**4   # radiation 
+                + Omega_phi                # quintessence
+            )
+
+            if np.ndim(H2) == 0:
+                return np.nan if H2 <= 0.0 else H0 * np.sqrt(H2)
+            return H0 * np.sqrt(np.where(H2 > 0.0, H2, np.nan))
 
         super().__init__(
             H_of_z=H_of_z,

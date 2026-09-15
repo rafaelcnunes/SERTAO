@@ -112,7 +112,11 @@ def main():
     from SERTAO.engine import LikelihoodEngine
     from SERTAO.MCMC   import run_mcmc
 
-    engine = LikelihoodEngine(datasets=datasets, use_cache=True)
+    engine = LikelihoodEngine(
+        datasets=datasets,
+        data_dir=os.path.join(_HERE, "data"),
+        use_cache=True,
+    )
 
     run_mcmc(
         engine        = engine,
