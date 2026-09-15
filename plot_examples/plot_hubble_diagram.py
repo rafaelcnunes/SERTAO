@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.join(BASE_DIR, ".."))
 from SERTAO.cosmology import GenericCosmology
 
 # ============================================================
-# Cosmological model  (edit here to change the theory curve)
+# Cosmological model 
 # ============================================================
 
 H0      = 67.36

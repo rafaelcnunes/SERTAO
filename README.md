@@ -5,7 +5,7 @@
   <img src="docs/logo.png" width="380">
 </p>
 
-SERTAO is a Python framework for Bayesian estimation of cosmological parameters from observational data. It uses nested sampling and is designed to be simple: the user defines a cosmological model and SERTAO handles everything else — likelihood evaluation, sampling, checkpointing, and output.
+SERTAO is a Python framework for Bayesian estimation of cosmological parameters from observational data. It uses nested sampling and is designed to be simple: the user defines a cosmological model and SERTAO handles everything else: likelihood evaluation, sampling, checkpointing, and output.
 
 ---
 

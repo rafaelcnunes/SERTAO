@@ -182,7 +182,4 @@ def H_model(z, p):
 # ================================================================
 # Pre-check wrapper for the engine
 # ================================================================
-
-# The engine accepts pre_check as a callable pre_check(p) → bool
-# It is passed to run_mcmc via the theory model.
 pre_check = _pre_check

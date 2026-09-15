@@ -8,16 +8,16 @@ species using the Fermi-Dirac energy integral.
 Each neutrino species i with mass m_i contributes:
 
     Omega_nu,i(z) = (7/8) * (4/11)^{4/3} * N_eff/N_species
-                    * Omega_gamma(z) * f(m_i / T_nu(z))        [eq. C1]
+                    * Omega_gamma(z) * f(m_i / T_nu(z))        
 
 where
 
-    T_nu(z)  = T_nu,0 * (1+z)                    [neutrino temperature]
+    T_nu(z)  = T_nu,0 * (1+z)                   
     T_nu,0   = (4/11)^{1/3} * T_CMB = 1.9454 K
 
 and f(y) is the dimensionless Fermi-Dirac integral:
 
-    f(y) = (120 / 7pi^4) * int_0^inf x^2 sqrt(x^2+y^2)/(e^x+1) dx   [eq. C3]
+    f(y) = (120 / 7pi^4) * int_0^inf x^2 sqrt(x^2+y^2)/(e^x+1) dx   
 
 approximated by the fitting formula [eq. C4]:
 
@@ -49,19 +49,19 @@ from functools import lru_cache
 # Physical constants
 # ==============================================================
 
-T_CMB       = 2.7255           # K  (Fixsen 2009)
+T_CMB       = 2.7255           # K 
 k_B         = 8.617333e-5      # eV/K
 T_nu0_K     = (4.0/11.0)**(1.0/3.0) * T_CMB   # K = 1.9454 K
 T_nu0_eV    = k_B * T_nu0_K                    # eV = 1.6764e-4 eV
-N_eff_std   = 3.044            # Planck 2018 / Mangano 2005
+N_eff_std   = 3.044            
 
-# Fitting formula coefficients (WMAP-7, Appendix C, eq. C4)
+# Fitting formula coefficients (WMAP-7)
 _A_FIT = 0.3173
 _P_FIT = 1.83
 
 
 # ==============================================================
-# Fermi-Dirac integral — fitting formula (eq. C4)
+# Fermi-Dirac integral — fitting formula
 # ==============================================================
 
 def fermi_dirac_f(y):
@@ -69,21 +69,13 @@ def fermi_dirac_f(y):
     Dimensionless Fermi-Dirac energy integral for one neutrino species.
 
         f(y) = (120/7pi^4) int_0^inf x^2 sqrt(x^2+y^2)/(e^x+1) dx
-             ≈ (1 + (A*y)^p)^{1/p}     [eq. C4, accurate to < 0.35%]
+             ≈ (1 + (A*y)^p)^{1/p}     [accurate to < 0.35%]
 
     where  y = m_nu / T_nu(z)  =  m_nu / (T_nu0 * (1+z)).
 
     Limits:
         f(0)      = 1       [massless, relativistic]
         f(y→∞)   ≈ A * y   [non-relativistic: rho ∝ m * n]
-
-    Parameters
-    ----------
-    y : float or array, dimensionless
-
-    Returns
-    -------
-    float or array
     """
     y = np.asarray(y, dtype=float)
     return (1.0 + (_A_FIT * y) ** _P_FIT) ** (1.0 / _P_FIT)
